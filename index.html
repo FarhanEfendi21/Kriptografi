@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Kalkulator Enkripsi-Dekripsi berbasis web dengan 5 algoritma cipher: Vigenere, Affine, Playfair, Hill, dan Enigma.">
+    <title>CryptoCalc — Kalkulator Enkripsi & Dekripsi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Background decoration -->
+    <div class="bg-decoration">
+        <div class="bg-orb bg-orb-1"></div>
+        <div class="bg-orb bg-orb-2"></div>
+        <div class="bg-orb bg-orb-3"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
+                    <div>
+                        <h1>CryptoCalc</h1>
+                        <p class="tagline">Encryption & Decryption Calculator</p>
+                    </div>
+                </div>
+                <div class="header-badge">
+                    <i class="fas fa-user-graduate"></i>
+                    <div class="header-identity">
+                        <span class="header-name">Muhammad Farhan Efendi</span>
+                        <span class="header-nim">21120123140181</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Tab Navigation -->
+        <nav class="tab-nav" id="tabNav">
+            <button class="tab-btn active" data-tab="vigenere" id="tab-vigenere">
+                <i class="fas fa-key"></i>
+                <span>Vigenère</span>
+            </button>
+            <button class="tab-btn" data-tab="affine" id="tab-affine">
+                <i class="fas fa-superscript"></i>
+                <span>Affine</span>
+            </button>
+            <button class="tab-btn" data-tab="playfair" id="tab-playfair">
+                <i class="fas fa-table-cells"></i>
+                <span>Playfair</span>
+            </button>
+            <button class="tab-btn" data-tab="hill" id="tab-hill">
+                <i class="fas fa-border-all"></i>
+                <span>Hill</span>
+            </button>
+            <button class="tab-btn" data-tab="enigma" id="tab-enigma">
+                <i class="fas fa-gear"></i>
+                <span>Enigma</span>
+            </button>
+        </nav>
+
+        <!-- ===== VIGENERE CIPHER ===== -->
+        <section class="cipher-panel active" id="panel-vigenere">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <h2><i class="fas fa-key"></i> Vigenère Cipher</h2>
+                    <span class="badge">Polyalphabetic</span>
+                </div>
+                <div class="panel-description">
+                    <p>Setiap huruf plaintext digeser sesuai huruf pada kata kunci yang berulang. Contoh: huruf A +
+                        kunci K = huruf K, dst.</p>
+                    <div class="formula-box">
+                        <strong>Enkripsi:</strong> C<sub>i</sub> = (P<sub>i</sub> + K<sub>i</sub>) mod 26
+                        &nbsp;&nbsp;|&nbsp;&nbsp;
+                        <strong>Dekripsi:</strong> P<sub>i</sub> = (C<sub>i</sub> − K<sub>i</sub> + 26) mod 26
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="input-group">
+                    <label for="vigenere-key"><i class="fas fa-key"></i> Kata Kunci</label>
+                    <input type="text" id="vigenere-key" placeholder="Masukkan kata kunci (contoh: KEY)"
+                        autocomplete="off">
+                    <span class="input-hint">Hanya huruf alfabet A-Z</span>
+                </div>
+                <div class="mode-toggle">
+                    <button class="mode-btn active" onclick="setMode('vigenere','text')" id="vigenere-mode-text"><i
+                            class="fas fa-font"></i> Teks</button>
+                    <button class="mode-btn" onclick="setMode('vigenere','file')" id="vigenere-mode-file"><i
+                            class="fas fa-file"></i> File</button>
+                </div>
+                <div class="file-section" id="vigenere-file-section" style="display:none">
+                    <label><i class="fas fa-upload"></i> Upload File (gambar, audio, video, dokumen, dll)</label>
+                    <input type="file" id="vigenere-file" class="file-input" onchange="handleFileUpload('vigenere')"
+                        accept="*/*">
+                    <div class="file-info" id="vigenere-file-info"></div>
+                </div>
+                <div class="io-grid" id="vigenere-text-section">
+                    <div class="io-section">
+                        <label for="vigenere-input"><i class="fas fa-file-lines"></i> Plaintext / Ciphertext</label>
+                        <textarea id="vigenere-input" rows="5"
+                            placeholder="Masukkan teks yang ingin dienkripsi atau didekripsi..."></textarea>
+                    </div>
+                    <div class="io-section">
+                        <label><i class="fas fa-file-shield"></i> Hasil</label>
+                        <textarea id="vigenere-output" rows="5" readonly
+                            placeholder="Hasil akan muncul di sini..."></textarea>
+                        <button class="copy-btn" onclick="copyOutput('vigenere-output')" title="Salin hasil"><i
+                                class="fas fa-copy"></i></button>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-encrypt" onclick="vigenereEncrypt()">
+                        <i class="fas fa-lock"></i> Enkripsi
+                    </button>
+                    <button class="btn btn-decrypt" onclick="vigenereDecrypt()">
+                        <i class="fas fa-lock-open"></i> Dekripsi
+                    </button>
+                    <button class="btn btn-download" id="vigenere-download" onclick="downloadResult('vigenere')"
+                        style="display:none">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                    <button class="btn btn-clear" onclick="clearFields('vigenere')">
+                        <i class="fas fa-eraser"></i> Bersihkan
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== AFFINE CIPHER ===== -->
+        <section class="cipher-panel" id="panel-affine">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <h2><i class="fas fa-superscript"></i> Affine Cipher</h2>
+                    <span class="badge">Monoalphabetic</span>
+                </div>
+                <div class="panel-description">
+                    <p>Setiap huruf diubah menjadi angka (A=0, Z=25), lalu dihitung dengan rumus linier
+                        <code>ax + b</code>. Kunci <strong>a</strong> harus coprime dengan 26, kunci <strong>b</strong>
+                        bernilai 0–25.
+                    </p>
+                    <div class="formula-box">
+                        <strong>Enkripsi:</strong> E(x) = (a × x + b) mod 26 &nbsp;&nbsp;|&nbsp;&nbsp;
+                        <strong>Dekripsi:</strong> D(y) = a<sup>−1</sup> × (y − b) mod 26
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="key-grid">
+                    <div class="input-group">
+                        <label for="affine-a"><i class="fas fa-a"></i> Kunci a</label>
+                        <input type="number" id="affine-a" placeholder="Contoh: 5" min="1" max="25">
+                        <span class="input-hint">Valid: 1, 3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25</span>
+                    </div>
+                    <div class="input-group">
+                        <label for="affine-b"><i class="fas fa-b"></i> Kunci b</label>
+                        <input type="number" id="affine-b" placeholder="Contoh: 8" min="0" max="25">
+                        <span class="input-hint">Nilai 0–25</span>
+                    </div>
+                </div>
+                <div class="mode-toggle">
+                    <button class="mode-btn active" onclick="setMode('affine','text')" id="affine-mode-text"><i
+                            class="fas fa-font"></i> Teks</button>
+                    <button class="mode-btn" onclick="setMode('affine','file')" id="affine-mode-file"><i
+                            class="fas fa-file"></i> File</button>
+                </div>
+                <div class="file-section" id="affine-file-section" style="display:none">
+                    <label><i class="fas fa-upload"></i> Upload File</label>
+                    <input type="file" id="affine-file" class="file-input" onchange="handleFileUpload('affine')"
+                        accept="*/*">
+                    <div class="file-info" id="affine-file-info"></div>
+                </div>
+                <div class="io-grid" id="affine-text-section">
+                    <div class="io-section">
+                        <label for="affine-input"><i class="fas fa-file-lines"></i> Plaintext / Ciphertext</label>
+                        <textarea id="affine-input" rows="5" placeholder="Masukkan teks..."></textarea>
+                    </div>
+                    <div class="io-section">
+                        <label><i class="fas fa-file-shield"></i> Hasil</label>
+                        <textarea id="affine-output" rows="5" readonly
+                            placeholder="Hasil akan muncul di sini..."></textarea>
+                        <button class="copy-btn" onclick="copyOutput('affine-output')" title="Salin hasil"><i
+                                class="fas fa-copy"></i></button>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-encrypt" onclick="affineEncrypt()">
+                        <i class="fas fa-lock"></i> Enkripsi
+                    </button>
+                    <button class="btn btn-decrypt" onclick="affineDecrypt()">
+                        <i class="fas fa-lock-open"></i> Dekripsi
+                    </button>
+                    <button class="btn btn-download" id="affine-download" onclick="downloadResult('affine')"
+                        style="display:none">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                    <button class="btn btn-clear" onclick="clearFields('affine')">
+                        <i class="fas fa-eraser"></i> Bersihkan
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== PLAYFAIR CIPHER ===== -->
+        <section class="cipher-panel" id="panel-playfair">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <h2><i class="fas fa-table-cells"></i> Playfair Cipher</h2>
+                    <span class="badge">Digraph</span>
+                </div>
+                <div class="panel-description">
+                    <p>Teks dipecah menjadi pasangan 2 huruf (digraph), lalu dienkripsi berdasarkan posisi di matriks
+                        5×5 yang dibentuk dari kata kunci. Huruf J otomatis diganti I.</p>
+                    <div class="formula-box">
+                        <strong>Baris sama:</strong> geser 1 ke kanan &nbsp;&nbsp;|&nbsp;&nbsp;
+                        <strong>Kolom sama:</strong> geser 1 ke bawah &nbsp;&nbsp;|&nbsp;&nbsp;
+                        <strong>Beda baris & kolom:</strong> tukar kolom
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="input-group">
+                    <label for="playfair-key"><i class="fas fa-key"></i> Kata Kunci</label>
+                    <input type="text" id="playfair-key" placeholder="Masukkan kata kunci (contoh: MONARCHY)"
+                        autocomplete="off">
+                    <span class="input-hint">Huruf alfabet. J akan otomatis diganti I.</span>
+                </div>
+                <div class="matrix-display" id="playfair-matrix-display">
+                    <label><i class="fas fa-table-cells"></i> Matriks 5×5</label>
+                    <div class="matrix-grid" id="playfair-matrix-grid"></div>
+                </div>
+                <div class="mode-toggle">
+                    <button class="mode-btn active" onclick="setMode('playfair','text')" id="playfair-mode-text"><i
+                            class="fas fa-font"></i> Teks</button>
+                    <button class="mode-btn" onclick="setMode('playfair','file')" id="playfair-mode-file"><i
+                            class="fas fa-file"></i> File</button>
+                </div>
+                <div class="file-section" id="playfair-file-section" style="display:none">
+                    <label><i class="fas fa-upload"></i> Upload File</label>
+                    <input type="file" id="playfair-file" class="file-input" onchange="handleFileUpload('playfair')"
+                        accept="*/*">
+                    <div class="file-info" id="playfair-file-info"></div>
+                </div>
+                <div class="io-grid" id="playfair-text-section">
+                    <div class="io-section">
+                        <label for="playfair-input"><i class="fas fa-file-lines"></i> Plaintext / Ciphertext</label>
+                        <textarea id="playfair-input" rows="5" placeholder="Masukkan teks..."></textarea>
+                    </div>
+                    <div class="io-section">
+                        <label><i class="fas fa-file-shield"></i> Hasil</label>
+                        <textarea id="playfair-output" rows="5" readonly
+                            placeholder="Hasil akan muncul di sini..."></textarea>
+                        <button class="copy-btn" onclick="copyOutput('playfair-output')" title="Salin hasil"><i
+                                class="fas fa-copy"></i></button>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-encrypt" onclick="playfairEncrypt()">
+                        <i class="fas fa-lock"></i> Enkripsi
+                    </button>
+                    <button class="btn btn-decrypt" onclick="playfairDecrypt()">
+                        <i class="fas fa-lock-open"></i> Dekripsi
+                    </button>
+                    <button class="btn btn-download" id="playfair-download" onclick="downloadResult('playfair')"
+                        style="display:none">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                    <button class="btn btn-clear" onclick="clearFields('playfair')">
+                        <i class="fas fa-eraser"></i> Bersihkan
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== HILL CIPHER ===== -->
+        <section class="cipher-panel" id="panel-hill">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <h2><i class="fas fa-border-all"></i> Hill Cipher</h2>
+                    <span class="badge">Polygraphic</span>
+                </div>
+                <div class="panel-description">
+                    <p>Plaintext dipecah menjadi blok 2 atau 3 huruf, lalu dikalikan dengan matriks kunci (mod 26).
+                        Determinan matriks harus coprime dengan 26 agar bisa didekripsi.</p>
+                    <div class="formula-box">
+                        <strong>Enkripsi:</strong> C = (K × P) mod 26 &nbsp;&nbsp;|&nbsp;&nbsp;
+                        <strong>Dekripsi:</strong> P = (K<sup>−1</sup> × C) mod 26
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="input-group">
+                    <label><i class="fas fa-ruler-combined"></i> Ukuran Matriks</label>
+                    <div class="matrix-size-toggle">
+                        <button class="size-btn active" onclick="setHillSize(2)" id="hill-size-2">2×2</button>
+                        <button class="size-btn" onclick="setHillSize(3)" id="hill-size-3">3×3</button>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label><i class="fas fa-border-all"></i> Matriks Kunci K</label>
+                    <div class="hill-matrix" id="hill-matrix">
+                        <!-- Generated by JS -->
+                    </div>
+                    <span class="input-hint">Determinan matriks harus coprime dengan 26 (bukan kelipatan 2 atau
+                        13)</span>
+                </div>
+                <div class="mode-toggle">
+                    <button class="mode-btn active" onclick="setMode('hill','text')" id="hill-mode-text"><i
+                            class="fas fa-font"></i> Teks</button>
+                    <button class="mode-btn" onclick="setMode('hill','file')" id="hill-mode-file"><i
+                            class="fas fa-file"></i> File</button>
+                </div>
+                <div class="file-section" id="hill-file-section" style="display:none">
+                    <label><i class="fas fa-upload"></i> Upload File</label>
+                    <input type="file" id="hill-file" class="file-input" onchange="handleFileUpload('hill')"
+                        accept="*/*">
+                    <div class="file-info" id="hill-file-info"></div>
+                </div>
+                <div class="io-grid" id="hill-text-section">
+                    <div class="io-section">
+                        <label for="hill-input"><i class="fas fa-file-lines"></i> Plaintext / Ciphertext</label>
+                        <textarea id="hill-input" rows="5" placeholder="Masukkan teks..."></textarea>
+                    </div>
+                    <div class="io-section">
+                        <label><i class="fas fa-file-shield"></i> Hasil</label>
+                        <textarea id="hill-output" rows="5" readonly
+                            placeholder="Hasil akan muncul di sini..."></textarea>
+                        <button class="copy-btn" onclick="copyOutput('hill-output')" title="Salin hasil"><i
+                                class="fas fa-copy"></i></button>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-encrypt" onclick="hillEncrypt()">
+                        <i class="fas fa-lock"></i> Enkripsi
+                    </button>
+                    <button class="btn btn-decrypt" onclick="hillDecrypt()">
+                        <i class="fas fa-lock-open"></i> Dekripsi
+                    </button>
+                    <button class="btn btn-download" id="hill-download" onclick="downloadResult('hill')"
+                        style="display:none">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                    <button class="btn btn-clear" onclick="clearFields('hill')">
+                        <i class="fas fa-eraser"></i> Bersihkan
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== ENIGMA CIPHER ===== -->
+        <section class="cipher-panel" id="panel-enigma">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <h2><i class="fas fa-gear"></i> Enigma Cipher</h2>
+                    <span class="badge">Electromechanical</span>
+                </div>
+                <div class="panel-description">
+                    <p>Simulasi mesin Enigma I (WWII) dengan 3 rotor dan Reflector B. Bersifat
+                        <strong>reciprocal</strong>: untuk dekripsi, masukkan ciphertext dengan posisi rotor awal yang
+                        sama.
+                    </p>
+                    <div class="formula-box">
+                        <strong>Alur sinyal:</strong> Input → Rotor III → II → I → Reflector B → Rotor I → II → III →
+                        Output
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="enigma-config">
+                    <div class="input-group">
+                        <label><i class="fas fa-gears"></i> Posisi Rotor</label>
+                        <div class="rotor-inputs">
+                            <div class="rotor-input-group">
+                                <span class="rotor-label">Rotor I</span>
+                                <select id="enigma-r1" class="rotor-select"></select>
+                            </div>
+                            <div class="rotor-input-group">
+                                <span class="rotor-label">Rotor II</span>
+                                <select id="enigma-r2" class="rotor-select"></select>
+                            </div>
+                            <div class="rotor-input-group">
+                                <span class="rotor-label">Rotor III</span>
+                                <select id="enigma-r3" class="rotor-select"></select>
+                            </div>
+                        </div>
+                        <span class="input-hint">Posisi awal tiap rotor (A-Z). Enigma bersifat reciprocal: untuk
+                            dekripsi, gunakan posisi yang sama.</span>
+                    </div>
+                </div>
+                <div class="mode-toggle">
+                    <button class="mode-btn active" onclick="setMode('enigma','text')" id="enigma-mode-text"><i
+                            class="fas fa-font"></i> Teks</button>
+                    <button class="mode-btn" onclick="setMode('enigma','file')" id="enigma-mode-file"><i
+                            class="fas fa-file"></i> File</button>
+                </div>
+                <div class="file-section" id="enigma-file-section" style="display:none">
+                    <label><i class="fas fa-upload"></i> Upload File</label>
+                    <input type="file" id="enigma-file" class="file-input" onchange="handleFileUpload('enigma')"
+                        accept="*/*">
+                    <div class="file-info" id="enigma-file-info"></div>
+                </div>
+                <div class="io-grid" id="enigma-text-section">
+                    <div class="io-section">
+                        <label for="enigma-input"><i class="fas fa-file-lines"></i> Input Teks</label>
+                        <textarea id="enigma-input" rows="5"
+                            placeholder="Masukkan teks (hanya huruf A-Z)..."></textarea>
+                    </div>
+                    <div class="io-section">
+                        <label><i class="fas fa-file-shield"></i> Hasil</label>
+                        <textarea id="enigma-output" rows="5" readonly
+                            placeholder="Hasil akan muncul di sini..."></textarea>
+                        <button class="copy-btn" onclick="copyOutput('enigma-output')" title="Salin hasil"><i
+                                class="fas fa-copy"></i></button>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-encrypt" onclick="enigmaProcess()">
+                        <i class="fas fa-arrows-rotate"></i> Proses (Encrypt / Decrypt)
+                    </button>
+                    <button class="btn btn-download" id="enigma-download" onclick="downloadResult('enigma')"
+                        style="display:none">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                    <button class="btn btn-clear" onclick="clearFields('enigma')">
+                        <i class="fas fa-eraser"></i> Bersihkan
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Toast Notification -->
+        <div class="toast" id="toast">
+            <i class="fas fa-check-circle"></i>
+            <span id="toast-message">Teks berhasil disalin!</span>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p class="footer-sub">Tugas Kriptografi | Implementasi 5 Algoritma Cipher</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
